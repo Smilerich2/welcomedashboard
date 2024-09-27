@@ -15,7 +15,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Welcomedashboard BSE",
-  description: "Willkommen im BSE Dashboard",
+  description: "Willkommen beim BSE Dashboard",
 };
 
 export default function RootLayout({
