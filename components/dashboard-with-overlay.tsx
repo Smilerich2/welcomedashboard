@@ -26,7 +26,7 @@ export function DashboardWithOverlayComponent() {
     let overlayTimer: NodeJS.Timeout | null = null;
     let countdownTimer: NodeJS.Timeout | null = null;
 
-    if (showOverlay) {
+    if (showOverlay && overlayType !== 'game') {
       overlayTimer = setTimeout(() => {
         setShowOverlay(false)
       }, OVERLAY_TIMEOUT)
@@ -40,11 +40,11 @@ export function DashboardWithOverlayComponent() {
       if (overlayTimer) clearTimeout(overlayTimer)
       if (countdownTimer) clearTimeout(countdownTimer)
     }
-  }, [showOverlay])
+  }, [showOverlay, overlayType])
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
-    if (countdown !== null && countdown > 0) {
+    if (countdown !== null && countdown > 0 && overlayType !== 'game') {
       timer = setTimeout(() => {
         setCountdown(countdown - 1)
       }, 1000)
@@ -52,7 +52,7 @@ export function DashboardWithOverlayComponent() {
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [countdown])
+  }, [countdown, overlayType])
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
