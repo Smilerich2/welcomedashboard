@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function DashboardWithOverlayComponent() {
@@ -10,8 +10,13 @@ export function DashboardWithOverlayComponent() {
   const [overlayContent, setOverlayContent] = useState<string>('')
   const [overlayType, setOverlayType] = useState<'iframe' | 'contact'>('iframe')
   const overlayTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [lastInteraction, setLastInteraction] = useState(Date.now())
 
   const OVERLAY_TIMEOUT = 15000; // 15 Sekunden
+
+  const resetTimer = useCallback(() => {
+    setLastInteraction(Date.now());
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -60,6 +65,32 @@ export function DashboardWithOverlayComponent() {
 
   const seconds = currentTime.getSeconds()
   const progress = (seconds / 60) * 360
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      resetTimer();
+    };
+
+    // Fügen Sie Event-Listener für verschiedene Interaktionen hinzu
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('mousemove', handleInteraction);
+    window.addEventListener('keypress', handleInteraction);
+
+    const checkInactivity = setInterval(() => {
+      const now = Date.now();
+      if (now - lastInteraction > 15000) { // 15 Sekunden
+        setShowOverlay(false);
+      }
+    }, 1000); // Überprüft jede Sekunde
+
+    return () => {
+      // Entfernen Sie die Event-Listener beim Aufräumen
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('mousemove', handleInteraction);
+      window.removeEventListener('keypress', handleInteraction);
+      clearInterval(checkInactivity);
+    };
+  }, [lastInteraction, resetTimer]);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
