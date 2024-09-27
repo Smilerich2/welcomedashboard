@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function DashboardWithOverlayComponent() {
@@ -70,13 +69,6 @@ export function DashboardWithOverlayComponent() {
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white border-opacity-20">
           <div className="p-8 flex flex-col items-center">
-            <Image
-              src="/logo.png"
-              alt="Berufliche Schule Elmshorn Europaschule Logo"
-              width={180}
-              height={180}
-              className="mb-6"
-            />
             <h1 className="text-5xl font-bold text-white mb-2 tracking-tight">Herzlich Willkommen</h1>
             <p className="text-xl text-white mb-8 opacity-80">Berufliche Schule Elmshorn</p>
             
