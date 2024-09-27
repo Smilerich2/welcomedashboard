@@ -12,7 +12,7 @@ export function DashboardWithOverlayComponent() {
   const [countdown, setCountdown] = useState<number | null>(null)
 
   const OVERLAY_TIMEOUT = 20000; // 20 Sekunden
-  const COUNTDOWN_START = 3; // Countdown startet bei 3 Sekunden
+  const COUNTDOWN_START = 5; // Countdown startet bei 3 Sekunden
 
   useEffect(() => {
     const timer = setInterval(() => {
