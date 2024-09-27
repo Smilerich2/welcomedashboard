@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function DashboardWithOverlayComponent() {
@@ -9,14 +9,10 @@ export function DashboardWithOverlayComponent() {
   const [showOverlay, setShowOverlay] = useState(false)
   const [overlayContent, setOverlayContent] = useState<string>('')
   const [overlayType, setOverlayType] = useState<'iframe' | 'contact'>('iframe')
-  const overlayTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const [lastInteraction, setLastInteraction] = useState(Date.now())
+  const [countdown, setCountdown] = useState<number | null>(null)
 
-  const OVERLAY_TIMEOUT = 15000; // 15 Sekunden
-
-  const resetTimer = useCallback(() => {
-    setLastInteraction(Date.now());
-  }, []);
+  const OVERLAY_TIMEOUT = 20000; // 20 Sekunden
+  const COUNTDOWN_START = 3; // Countdown startet bei 3 Sekunden
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -27,27 +23,36 @@ export function DashboardWithOverlayComponent() {
   }, [])
 
   useEffect(() => {
+    let overlayTimer: NodeJS.Timeout | null = null;
+    let countdownTimer: NodeJS.Timeout | null = null;
+
     if (showOverlay) {
-      resetOverlayTimer()
-    } else {
-      if (overlayTimerRef.current) {
-        clearTimeout(overlayTimerRef.current)
-      }
+      overlayTimer = setTimeout(() => {
+        setShowOverlay(false)
+      }, OVERLAY_TIMEOUT)
+
+      countdownTimer = setTimeout(() => {
+        setCountdown(COUNTDOWN_START)
+      }, OVERLAY_TIMEOUT - COUNTDOWN_START * 1000)
+    }
+
+    return () => {
+      if (overlayTimer) clearTimeout(overlayTimer)
+      if (countdownTimer) clearTimeout(countdownTimer)
     }
   }, [showOverlay])
 
-  const resetOverlayTimer = () => {
-    if (overlayTimerRef.current) {
-      clearTimeout(overlayTimerRef.current)
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (countdown !== null && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1)
+      }, 1000)
     }
-    overlayTimerRef.current = setTimeout(() => {
-      setShowOverlay(false)
-    }, OVERLAY_TIMEOUT)
-  }
-
-  const handleOverlayInteraction = () => {
-    resetOverlayTimer()
-  }
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+  }, [countdown])
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
@@ -65,32 +70,6 @@ export function DashboardWithOverlayComponent() {
 
   const seconds = currentTime.getSeconds()
   const progress = (seconds / 60) * 360
-
-  useEffect(() => {
-    const handleInteraction = () => {
-      resetTimer();
-    };
-
-    // Fügen Sie Event-Listener für verschiedene Interaktionen hinzu
-    window.addEventListener('click', handleInteraction);
-    window.addEventListener('mousemove', handleInteraction);
-    window.addEventListener('keypress', handleInteraction);
-
-    const checkInactivity = setInterval(() => {
-      const now = Date.now();
-      if (now - lastInteraction > 15000) { // 15 Sekunden
-        setShowOverlay(false);
-      }
-    }, 1000); // Überprüft jede Sekunde
-
-    return () => {
-      // Entfernen Sie die Event-Listener beim Aufräumen
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('mousemove', handleInteraction);
-      window.removeEventListener('keypress', handleInteraction);
-      clearInterval(checkInactivity);
-    };
-  }, [lastInteraction, resetTimer]);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -181,7 +160,7 @@ export function DashboardWithOverlayComponent() {
               className={`bg-white rounded-lg shadow-xl ${overlayType === 'iframe' ? 'w-full h-full' : 'max-w-md'}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className={`relative ${overlayType === 'iframe' ? 'w-full h-full' : 'p-8'}`} onMouseMove={handleOverlayInteraction} onTouchStart={handleOverlayInteraction}>
+              <div className={`relative ${overlayType === 'iframe' ? 'w-full h-full' : 'p-8'}`}>
                 {overlayType === 'iframe' ? (
                   <iframe
                     src={overlayContent}
@@ -195,6 +174,13 @@ export function DashboardWithOverlayComponent() {
                     <a href="mailto:info@bs-elmshorn.de" className="text-2xl text-blue-600 hover:underline">info@bs-elmshorn.de</a>
                   </div>
                 )}
+                
+                {countdown !== null && (
+                  <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold">
+                    {countdown}
+                  </div>
+                )}
+
                 <button
                   className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 z-10"
                   onClick={() => setShowOverlay(false)}
