@@ -16,6 +16,12 @@ const backgroundIcons = {
   winter: '/snowman.svg'
 }
 
+const logos = {
+  normal: '/logo.png',
+  herbst: '/logo_herbst.png',
+  winter: '/logo_winter.png'
+}
+
 export function DashboardWithOverlayComponent() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [showOverlay, setShowOverlay] = useState(false)
@@ -66,13 +72,13 @@ export function DashboardWithOverlayComponent() {
       />
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white border-opacity-20 p-8">
+
           <h1 className="text-5xl font-bold text-white mb-2 tracking-tight text-center">Herzlich Willkommen</h1>
           <p className="text-xl text-white mb-8 opacity-80 text-center">Berufliche Schule Elmshorn</p>
+          <div className="text-white text-5xl font-bold text-center mb-4">{formatTime(currentTime)}</div>
+          <div className="text-white text-lg opacity-80 mb-4 text-center">{formatDate(currentTime)}</div>          
           
-          <div className="text-white text-5xl font-bold text-center mb-2">{formatTime(currentTime)}</div>
-          <div className="text-white text-lg opacity-80 mb-8 text-center">{formatDate(currentTime)}</div>
-          
-          <div className="flex justify-center gap-6 w-full max-w-3xl">
+          <div className="flex justify-center gap-6 w-full max-w-lg mx-auto">
             {buttons.map((button) => (
               <motion.button
                 key={button.name}
@@ -99,23 +105,36 @@ export function DashboardWithOverlayComponent() {
         </div>
       </div>
 
+      {/* Logo in der unteren linken Ecke */}
+      <div className="absolute bottom-4 left-4 z-20">
+        <Image
+          src={logos[background]}
+          alt="Schullogo"
+          width={150}  // Erhöht von 100 auf 150 (50% größer)
+          height={150} // Erhöht von 100 auf 150 (50% größer)
+          className="w-auto h-auto" // Erlaubt dem Bild, sein natürliches Seitenverhältnis beizubehalten
+        />
+      </div>
+
       <div className="absolute bottom-4 right-4 flex space-x-2 z-20">
         {(Object.keys(backgrounds) as Array<keyof typeof backgrounds>).map((bg) => (
           <button
             key={bg}
-            className={`p-2 rounded-full ${
+            className={`w-10 h-10 rounded-full ${
               background === bg ? 'bg-white text-black' : 'bg-black bg-opacity-50 text-white'
-            } transition-colors duration-200 hover:bg-opacity-75`}
+            } transition-colors duration-200 hover:bg-opacity-75 flex items-center justify-center`}
             onClick={() => handleBackgroundChange(bg)}
             title={bg.charAt(0).toUpperCase() + bg.slice(1)}
           >
-            <Image
-              src={backgroundIcons[bg]}
-              alt={`${bg} icon`}
-              width={24}
-              height={24}
-              className="w-6 h-6"
-            />
+            <div className="flex items-center justify-center w-full h-full">
+              <Image
+                src={backgroundIcons[bg]}
+                alt={`${bg} icon`}
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+            </div>
           </button>
         ))}
       </div>
