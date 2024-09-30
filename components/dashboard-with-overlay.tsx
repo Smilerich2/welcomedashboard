@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
 const backgrounds = {
-  normal: '/normal.mp4',
+  normal: '/europa.mp4',
   herbst: '/herbst.mp4',
-  winter: '/winter.mp4'
+  winter: '/snow.mp4'
 }
 
 const backgroundIcons = {
