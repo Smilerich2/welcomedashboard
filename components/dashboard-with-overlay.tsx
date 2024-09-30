@@ -29,6 +29,7 @@ export function DashboardWithOverlayComponent() {
   const [overlayType, setOverlayType] = useState<'iframe' | 'contact'>('iframe')
   const [background, setBackground] = useState<keyof typeof backgrounds>('normal')
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -59,6 +60,27 @@ export function DashboardWithOverlayComponent() {
   const handleBackgroundChange = (newBackground: keyof typeof backgrounds) => {
     setBackground(newBackground)
   }
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((e) => {
+        console.error(`Error attempting to enable full-screen mode: ${e.message}`)
+      })
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
+    }
+  }
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -117,6 +139,22 @@ export function DashboardWithOverlayComponent() {
       </div>
 
       <div className="absolute bottom-4 right-4 flex space-x-2 z-20">
+        {/* Fullscreen-Schalter */}
+        <button
+          onClick={toggleFullscreen}
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black bg-opacity-50 text-white transition-colors duration-200 hover:bg-opacity-75 flex items-center justify-center"
+          title={isFullscreen ? "Vollbildmodus beenden" : "Vollbildmodus"}
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {isFullscreen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            )}
+          </svg>
+        </button>
+
+        {/* Bestehende Hintergrund-Schalter */}
         {(Object.keys(backgrounds) as Array<keyof typeof backgrounds>).map((bg) => (
           <button
             key={bg}
