@@ -71,18 +71,18 @@ export function DashboardWithOverlayComponent() {
         playsInline
       />
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white border-opacity-20 p-8">
+        <div className="w-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white border-opacity-20 p-4 sm:p-6 md:p-8">
 
-          <h1 className="text-5xl font-bold text-white mb-2 tracking-tight text-center">Herzlich Willkommen</h1>
-          <p className="text-xl text-white mb-8 opacity-80 text-center">Berufliche Schule Elmshorn</p>
-          <div className="text-white text-5xl font-bold text-center mb-4">{formatTime(currentTime)}</div>
-          <div className="text-white text-lg opacity-80 mb-4 text-center">{formatDate(currentTime)}</div>          
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight text-center">Herzlich Willkommen</h1>
+          <p className="text-lg sm:text-xl text-white mb-4 sm:mb-6 md:mb-8 opacity-80 text-center">Berufliche Schule Elmshorn</p>
+          <div className="text-white text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-2 sm:mb-3 md:mb-4">{formatTime(currentTime)}</div>
+          <div className="text-white text-sm sm:text-base md:text-lg opacity-80 mb-4 sm:mb-6 md:mb-8 text-center">{formatDate(currentTime)}</div>          
           
-          <div className="flex justify-center gap-6 w-full max-w-lg mx-auto">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 w-full max-w-lg mx-auto">
             {buttons.map((button) => (
               <motion.button
                 key={button.name}
-                className="bg-white bg-opacity-20 rounded-xl p-6 flex flex-col items-center justify-center transition-all duration-300 flex-1"
+                className="bg-white bg-opacity-20 rounded-xl p-4 sm:p-6 flex flex-row sm:flex-col items-center justify-center transition-all duration-300 flex-1"
                 whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
@@ -95,10 +95,10 @@ export function DashboardWithOverlayComponent() {
                   setShowOverlay(true)
                 }}
               >
-                <svg className="w-10 h-10 text-white mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white mb-0 sm:mb-2 md:mb-3 mr-3 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={button.icon} />
                 </svg>
-                <span className="text-lg font-medium text-white">{button.name}</span>
+                <span className="text-base sm:text-lg font-medium text-white">{button.name}</span>
               </motion.button>
             ))}
           </div>
@@ -110,9 +110,9 @@ export function DashboardWithOverlayComponent() {
         <Image
           src={logos[background]}
           alt="Schullogo"
-          width={150}  // Erhöht von 100 auf 150 (50% größer)
-          height={150} // Erhöht von 100 auf 150 (50% größer)
-          className="w-auto h-auto" // Erlaubt dem Bild, sein natürliches Seitenverhältnis beizubehalten
+          width={100}
+          height={100}
+          className="w-auto h-auto max-h-16 sm:max-h-24 md:max-h-32" // Responsive Größe
         />
       </div>
 
@@ -120,7 +120,7 @@ export function DashboardWithOverlayComponent() {
         {(Object.keys(backgrounds) as Array<keyof typeof backgrounds>).map((bg) => (
           <button
             key={bg}
-            className={`w-10 h-10 rounded-full ${
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${
               background === bg ? 'bg-white text-black' : 'bg-black bg-opacity-50 text-white'
             } transition-colors duration-200 hover:bg-opacity-75 flex items-center justify-center`}
             onClick={() => handleBackgroundChange(bg)}
@@ -130,9 +130,9 @@ export function DashboardWithOverlayComponent() {
               <Image
                 src={backgroundIcons[bg]}
                 alt={`${bg} icon`}
-                width={20}
-                height={20}
-                className="w-5 h-5"
+                width={16}
+                height={16}
+                className="w-4 h-4 sm:w-5 sm:h-5"
               />
             </div>
           </button>
