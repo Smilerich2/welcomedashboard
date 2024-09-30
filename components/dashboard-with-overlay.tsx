@@ -17,7 +17,7 @@ const backgroundIcons = {
 }
 
 const logos = {
-  normal: '/logo.png',
+  normal: '/Logo.png',
   herbst: '/logo_herbst.png',
   winter: '/logo_winter.png'
 }
@@ -110,9 +110,9 @@ export function DashboardWithOverlayComponent() {
         <Image
           src={logos[background]}
           alt="Schullogo"
-          width={100}
-          height={100}
-          className="w-auto h-auto max-h-16 sm:max-h-24 md:max-h-32" // Responsive Größe
+          width={150}
+          height={150}
+          className="w-auto h-auto max-h-24 sm:max-h-32 md:max-h-40 lg:max-h-48" // Responsive Größe, größer als zuvor
         />
       </div>
 
