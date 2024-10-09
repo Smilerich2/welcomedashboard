@@ -30,11 +30,6 @@ export function DashboardWithOverlayComponent() {
   const [background, setBackground] = useState<keyof typeof backgrounds>('normal')
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [showMessageInput, setShowMessageInput] = useState(false)
-  const [message, setMessage] = useState('')
-  const [pin, setPin] = useState('')
-  const [isPinCorrect, setIsPinCorrect] = useState(false)
-  const correctPin = '1254' // Festgelegter 4-stelliger Zahlencode
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -47,19 +42,6 @@ export function DashboardWithOverlayComponent() {
       videoRef.current.play()
     }
   }, [background])
-
-  useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        const res = await fetch('/api/message')
-        const data = await res.json()
-        setMessage(data.message)
-      } catch (error) {
-        console.error('Fehler beim Abrufen der Nachricht:', error)
-      }
-    }
-    fetchMessage()
-  }, [])
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
@@ -100,49 +82,8 @@ export function DashboardWithOverlayComponent() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
 
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (pin === correctPin) {
-      setIsPinCorrect(true)
-    } else {
-      alert('Falsche PIN!')
-      setPin('')
-    }
-  }
-
-  const handleMessageSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const res = await fetch('/api/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      })
-      if (!res.ok) {
-        throw new Error('Fehler beim Speichern der Nachricht')
-      }
-      setShowMessageInput(false)
-      setIsPinCorrect(false)
-      setPin('')
-    } catch (error) {
-      console.error('Fehler beim Speichern der Nachricht:', error)
-      alert('Fehler beim Speichern der Nachricht. Bitte versuchen Sie es erneut.')
-    }
-  }
-
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Nachricht-Button in der oberen linken Ecke */}
-      <button
-        onClick={() => setShowMessageInput(true)}
-        className="absolute top-4 left-4 z-50 bg-white bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all duration-300"
-        title="Nachricht eingeben"
-      >
-        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-        </svg>
-      </button>
-
       <video
         ref={videoRef}
         className="absolute top-0 left-0 w-full h-full object-cover"
@@ -153,44 +94,35 @@ export function DashboardWithOverlayComponent() {
       />
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white border-opacity-20 p-4 sm:p-6 md:p-8">
-          <div className="flex flex-col h-full">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight text-center">Herzlich Willkommen</h1>
-            <p className="text-lg sm:text-xl text-white mb-4 sm:mb-6 md:mb-8 opacity-80 text-center">Berufliche Schule Elmshorn</p>
-            <div className="text-white text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-2 sm:mb-3 md:mb-4">{formatTime(currentTime)}</div>
-            <div className="text-white text-sm sm:text-base md:text-lg opacity-80 mb-4 sm:mb-6 md:mb-8 text-center">{formatDate(currentTime)}</div>          
-            
-            {message && (
-              <div className="mb-4 p-4 bg-white bg-opacity-20 rounded-xl">
-                <p className="text-white text-lg text-center">{message}</p>
-              </div>
-            )}
 
-            <div className="mt-auto">
-              <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 w-full max-w-lg mx-auto">
-                {buttons.map((button) => (
-                  <motion.button
-                    key={button.name}
-                    className="bg-white bg-opacity-20 rounded-xl p-4 sm:p-6 flex flex-row sm:flex-col items-center justify-center transition-all duration-300 flex-1"
-                    whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      if (button.url) {
-                        setOverlayContent(button.url)
-                        setOverlayType('iframe')
-                      } else {
-                        setOverlayType('contact')
-                      }
-                      setShowOverlay(true)
-                    }}
-                  >
-                    <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white mb-0 sm:mb-2 md:mb-3 mr-3 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={button.icon} />
-                    </svg>
-                    <span className="text-base sm:text-lg font-medium text-white">{button.name}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight text-center">Herzlich Willkommen</h1>
+          <p className="text-lg sm:text-xl text-white mb-4 sm:mb-6 md:mb-8 opacity-80 text-center">Berufliche Schule Elmshorn</p>
+          <div className="text-white text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-2 sm:mb-3 md:mb-4">{formatTime(currentTime)}</div>
+          <div className="text-white text-sm sm:text-base md:text-lg opacity-80 mb-4 sm:mb-6 md:mb-8 text-center">{formatDate(currentTime)}</div>          
+          
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 w-full max-w-lg mx-auto">
+            {buttons.map((button) => (
+              <motion.button
+                key={button.name}
+                className="bg-white bg-opacity-20 rounded-xl p-4 sm:p-6 flex flex-row sm:flex-col items-center justify-center transition-all duration-300 flex-1"
+                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (button.url) {
+                    setOverlayContent(button.url)
+                    setOverlayType('iframe')
+                  } else {
+                    setOverlayType('contact')
+                  }
+                  setShowOverlay(true)
+                }}
+              >
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white mb-0 sm:mb-2 md:mb-3 mr-3 sm:mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={button.icon} />
+                </svg>
+                <span className="text-base sm:text-lg font-medium text-white">{button.name}</span>
+              </motion.button>
+            ))}
           </div>
         </div>
       </div>
@@ -280,90 +212,6 @@ export function DashboardWithOverlayComponent() {
                   </svg>
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-
-        {showMessageInput && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => {
-              setShowMessageInput(false)
-              setIsPinCorrect(false)
-              setPin('')
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {!isPinCorrect ? (
-                <>
-                  <h2 className="text-2xl font-bold mb-4">PIN eingeben</h2>
-                  <form onSubmit={handlePinSubmit}>
-                    <input
-                      type="password"
-                      placeholder="PIN eingeben"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value)}
-                      className="w-full p-2 mb-4 border rounded"
-                      maxLength={4}
-                    />
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setShowMessageInput(false)}
-                        className="mr-2 px-4 py-2 bg-gray-300 rounded"
-                      >
-                        Abbrechen
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
-                      >
-                        Bestätigen
-                      </button>
-                    </div>
-                  </form>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-bold mb-4">Neue Nachricht eingeben</h2>
-                  <form onSubmit={handleMessageSubmit}>
-                    <textarea
-                      placeholder="Nachricht eingeben"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className="w-full p-2 mb-4 border rounded"
-                      rows={4}
-                    />
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowMessageInput(false)
-                          setIsPinCorrect(false)
-                        }}
-                        className="mr-2 px-4 py-2 bg-gray-300 rounded"
-                      >
-                        Abbrechen
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
-                      >
-                        Senden
-                      </button>
-                    </div>
-                  </form>
-                </>
-              )}
             </motion.div>
           </motion.div>
         )}
