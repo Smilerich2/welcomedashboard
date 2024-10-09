@@ -9,8 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const message = await prisma.message.findFirst()
       res.status(200).json({ message: message?.content || '' })
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' })
+      res.status(500).json({ error: 'Fehler beim Abrufen der Nachricht' })
     }
   } else if (req.method === 'POST') {
     try {
@@ -22,8 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       res.status(200).json({ success: true })
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' })
+      res.status(500).json({ error: 'Fehler beim Speichern der Nachricht' })
     }
   } else {
     res.status(405).json({ error: 'Methode nicht erlaubt' })
