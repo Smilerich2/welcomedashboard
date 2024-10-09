@@ -48,19 +48,6 @@ export function DashboardWithOverlayComponent() {
     }
   }, [background])
 
-  useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        const res = await fetch('/api/message')
-        const data = await res.json()
-        setMessage(data.message)
-      } catch (error) {
-        console.error('Fehler beim Abrufen der Nachricht:', error)
-      }
-    }
-    fetchMessage()
-  }, [])
-
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
   }
@@ -100,6 +87,15 @@ export function DashboardWithOverlayComponent() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedMessage = localStorage.getItem('welcomeMessage')
+      if (savedMessage) {
+        setMessage(savedMessage)
+      }
+    }
+  }, [])
+
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (pin === correctPin) {
@@ -110,24 +106,14 @@ export function DashboardWithOverlayComponent() {
     }
   }
 
-  const handleMessageSubmit = async (e: React.FormEvent) => {
+  const handleMessageSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const res = await fetch('/api/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      })
-      if (!res.ok) {
-        throw new Error('Fehler beim Speichern der Nachricht')
-      }
-      setShowMessageInput(false)
-      setIsPinCorrect(false)
-      setPin('')
-    } catch (error) {
-      console.error('Fehler beim Speichern der Nachricht:', error)
-      alert('Fehler beim Speichern der Nachricht. Bitte versuchen Sie es erneut.')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('welcomeMessage', message)
     }
+    setShowMessageInput(false)
+    setIsPinCorrect(false)
+    setPin('')
   }
 
   return (
